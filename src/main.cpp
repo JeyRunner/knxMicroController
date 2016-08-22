@@ -99,7 +99,7 @@ int main()
             //_delay_ms(200);
             Log::log("\n\r\n\r---- Nr.%d\n\r", counter);
             knxPacket.print();
-            free(&knxPacket);
+            //free(&knxPacket);
             counter++;
         }
         

@@ -30,6 +30,9 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${CMAKE_CURRENT_SOURCE_DIR}/bin")
 
 include_directories( ${SRC_DIR}log/)
 
+# no: warning: deprecated conversion from string constant to ‘char*’ [-Wwrite-strings]
+add_definitions(-Wno-write-strings)
+
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 add_executable(${PROJECT_NAME} ${SRC_FILES} src/log/new.h)
 
