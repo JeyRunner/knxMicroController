@@ -1,5 +1,5 @@
 
-# knxMicroController   ![Layout](https://travis-ci.org/JeyRunner/knxMicroController.svg?branch=master)
+# Knx MicroController   [![Layout](https://travis-ci.org/JeyRunner/knxMicroController.svg?branch=master)](https://travis-ci.org/JeyRunner/knxMicroController)
 Library to access knx bus for Atmel Atmaga (here atamega32 is used)
 
 ## Hardware
