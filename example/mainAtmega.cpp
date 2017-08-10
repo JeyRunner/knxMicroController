@@ -5,40 +5,11 @@
 #include <util/setbaud.h>
 #include <avr/eeprom.h>
 #include <Log.h>
-#include <Queue.h>
+
+// set knx vars
+#define KNX_TIMER_INTERRUPT_VECT TIMER1_COMPA_vect
+#define KNX_INPORT_INTERRUPT_VECT INT1_vect
 #include "Knx.h"
-
-//uint8_t startCounter EEMEM;
-
-char motorSteps[4] = {0b0001, 0b0010, 0b0100, 0b1000};
-char motorStepAt = 0;
-
-void motorDoSteps(int steps)
-{
-    bool direction = true;
-    if (steps < 0)
-    {
-        direction = false;
-        steps = -steps;
-    }
-    
-    for (int i = 0; i < steps; ++i)
-    {
-        PORTA = (PORTA & ~0b00011110) | (motorSteps[motorStepAt] << 1);
-    
-        if (direction)
-            motorStepAt++;
-        else
-            motorStepAt--;
-        
-        if (motorStepAt >= 4)
-            motorStepAt = 0;
-        if (motorStepAt < 0)
-            motorStepAt = 3;
-        
-        _delay_ms(30);
-    }
-}
 
 
 // go
@@ -51,13 +22,6 @@ int main()
     // IO
     DDRB |=  ( 1 << PB1 ); // PB1 -> out
     DDRD &= ~( 1 << PD3 ); // PD3 -> in
-    
-    // stepper motor
-    DDRA |=  ( 1 << PA1 ); // PA1 -> out
-    DDRA |=  ( 1 << PA2 ); // PA2 -> out
-    DDRA |=  ( 1 << PA3 ); // PA3 -> out
-    DDRA |=  ( 1 << PA4 ); // PA4 -> out
-
     
     
     // pull up for buttons
@@ -160,8 +124,7 @@ int main()
             }
             buttonDown = true;
         }
-        
-        
-        motorDoSteps(1);
+
+      _delay_ms(30);
     }
 }

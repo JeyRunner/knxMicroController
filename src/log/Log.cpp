@@ -10,7 +10,6 @@
  */
 
 #include "Log.h"
-#include <Queue.h>
 
 
 // static
@@ -42,12 +41,24 @@ void Log::init()
     sendBufferEnd   = sendBuffer + LOG_WRITE_BUFFER_SIZE -1;
     
     // UART
+#ifdef ATMEGA
     UBRRH = UBRRH_VALUE;                            // speed via macro in setbaud.h -> takes BAUD value
     UBRRL = UBRRL_VALUE;                            // speed
     
     UCSRB |= ( 1 <<  TXEN) | ( 1 <<  RXEN);         // enable send, receive
     //UCSRB |= ( 1 <<  UDRIE);                        // interrupt for send-ready
     UCSRC = (1<<URSEL)|(1 << UCSZ1)|(1 << UCSZ0);   // format setting: async 8N1
+#elif ATXMEGA
+#define BAUD 9600
+#include <util/setbaud.h>
+    USARTC0.BAUDCTRLB = UBRRH_VALUE; // speed via macro in setbaud.h -> takes BAUD value
+    USARTC0.BAUDCTRLA = UBRRL_VALUE;
+
+    USARTC0.CTRLB = USART_TXEN_bm | USART_RXEN_bm; // enable send, receive
+    USARTC0.CTRLC = USART_CHSIZE_8BIT_gc;          // 8bit per character
+
+    PORTC.DIRSET |= PIN3_bm;  // PC3 as tx -> send out
+#endif
 }
 
 // interrupt if send ready
@@ -57,6 +68,7 @@ ISR(USART_UDRE_vect)
 }
 void Log::sendNextFromCharsToSend()
 {
+  /*
     // disable self
     UCSRB &= ~( 1 <<  UDRIE);
     
@@ -106,9 +118,13 @@ void Log::uartPutByte(char c)
 {
     
     // wait until ready
-    while (!(UCSRA & (1 << UDRE)))
-    {}
+#ifdef ATMEGA
+    while (!(UCSRA & (1 << UDRE)));
     UDR = c;
+#elif ATXMEGA
+    while (!( USARTC0.STATUS & USART_DREIF_bm));
+    USARTC0.DATA = c;
+#endif
     
     /*
     *sendBufferWrite = c;
@@ -144,15 +160,15 @@ void Log::log(char *format, ...)
     int size = vsnprintf(out, sizeof(out), format, args);
     
     // disable self
-    UCSRB &= ~( 1 <<  UDRIE);
+    //UCSRB &= ~( 1 <<  UDRIE);
     for (int i = 0; i < size; ++i)
     {
-        //_delay_ms(1);
+        //_delay_ms(10);
         uartPutByte(out[i]);
     }
     
     // enable interrupt
-    UCSRB |= ( 1 <<  UDRIE);
+    //UCSRB |= ( 1 <<  UDRIE);
     
     va_end(args);
 }

@@ -63,6 +63,17 @@ class KnxIO
         static bool sendTelegram(char *bytes, int size); // return false if last telegram is not send already
         static bool telegramSendByteBufferNext();
         static bool sendCollision();
+
+
+        static void setTimerVal(int us);
+        static void setTimerInterrupt(int us); // interrupt on timer value us
+        static int  getTimerVal();
+        static int getTimerInterrupt();
+        static void setDebugPin(bool on);
+        static bool getInPin(); // true if one -> bus high
+        static void setOutPin(bool on);
+        static void interruptInPinEnable(bool on);
+        static void interruptTimerEnable(bool on);
 };
 
 #define KNX_SENDING_HIGH   false

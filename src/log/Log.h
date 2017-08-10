@@ -12,7 +12,12 @@
 
 #ifndef _KNX_LOG_H
 #define _KNX_LOG_H
-#define BAUD 9600UL
+
+//#define BAUD 9600
+//#ifndef BAUD
+//#include <util/setbaud.h>
+//#endif
+
 #define LOG_READ_BUFFER_SIZE  256
 #define LOG_WRITE_BUFFER_SIZE 0
 
@@ -25,7 +30,6 @@
 #include <util/delay.h>
 #include <avr/interrupt.h>
 #include <util/atomic.h>
-#include <util/setbaud.h>
 
 template <class T>
 class Queue;
